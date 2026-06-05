@@ -1,0 +1,78 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thoughts-dashboard
+  labels:
+    app: thoughts-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thoughts-dashboard
+  template:
+    metadata:
+      labels:
+        app: thoughts-dashboard
+    spec:
+      containers:
+      - name: dashboard
+        image: thoughts-dashboard:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+          protocol: TCP
+        env:
+        - name: FLASK_ENV
+          value: "production"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: thoughts-dashboard
+  labels:
+    app: thoughts-dashboard
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5000
+    targetPort: 5000
+    protocol: TCP
+    name: http
+  selector:
+    app: thoughts-dashboard
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: thoughts-dashboard
+  labels:
+    app: thoughts-dashboard
+spec:
+  to:
+    kind: Service
+    name: thoughts-dashboard
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

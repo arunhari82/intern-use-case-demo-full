@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Thoughts Database</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .nav-links {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
+            margin-right: 10px;
+        }
+        
+        .nav-links a:hover {
+            background: #764ba2;
+            transform: translateY(-1px);
+        }
+        
+        .query-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .query-panel h2 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            color: #495057;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            color: #333;
+            resize: vertical;
+            transition: all 0.2s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .run-button {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+        }
+        
+        .run-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+        }
+        
+        .run-button:active {
+            transform: translateY(0);
+        }
+        
+        .clear-button {
+            padding: 12px 24px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .clear-button:hover {
+            background: #f8f9fa;
+        }
+        
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .error-message strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #10b981;
+        }
+        
+        .results-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .results-header {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .results-header h2 {
+            color: #333;
+            font-size: 1.5em;
+            margin: 0;
+        }
+        
+        .row-count {
+            color: #666;
+            font-size: 0.9em;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #dee2e6;
+            white-space: nowrap;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+            font-size: 0.9em;
+        }
+        
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+        
+        .query-examples {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .query-examples h3 {
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        
+        .example-query {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #495057;
+            cursor: pointer;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s;
+        }
+        
+        .example-query:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .example-query:last-child {
+            margin-bottom: 0;
+        }
+        
+        .warning-banner {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f59e0b;
+            font-size: 0.9em;
+        }
+        
+        .warning-banner strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Admin Panel</h1>
+            <p class="subtitle">Execute custom SQL queries for debugging</p>
+            <div class="nav-links">
+                <a href="/">Back to Dashboard</a>
+            </div>
+        </header>
+        
+        <div class="warning-banner">
+            <strong>Warning:</strong>
+            This panel allows direct database access. Be careful with UPDATE, DELETE, and DROP statements. All queries are executed immediately.
+        </div>
+        
+        {% if error %}
+        <div class="error-message">
+            <strong>Query Error:</strong>
+            <code>{{ error }}</code>
+        </div>
+        {% endif %}
+        
+        {% if results is not none and not error %}
+            {% if columns %}
+                <div class="success-message">
+                    Query executed successfully! Retrieved {{ row_count }} row(s).
+                </div>
+            {% else %}
+                <div class="success-message">
+                    Query executed successfully! {{ row_count }} row(s) affected.
+                </div>
+            {% endif %}
+        {% endif %}
+        
+        <div class="query-panel">
+            <h2>SQL Query Editor</h2>
+            <form method="POST" action="/admin">
+                <div class="form-group">
+                    <label for="query">Enter SQL Query:</label>
+                    <textarea name="query" id="query" placeholder="SELECT * FROM thoughts LIMIT 10;">{{ query }}</textarea>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="run-button">Run Query</button>
+                    <button type="button" class="clear-button" onclick="document.getElementById('query').value=''; return false;">Clear</button>
+                </div>
+            </form>
+            
+            <div class="query-examples">
+                <h3>Example Queries (click to use):</h3>
+                <div class="example-query" onclick="document.getElementById('query').value='SELECT * FROM thoughts LIMIT 10;'">
+                    SELECT * FROM thoughts LIMIT 10;
+                </div>
+                <div class="example-query" onclick="document.getElementById('query').value='SELECT status, COUNT(*) as count FROM thoughts GROUP BY status;'">
+                    SELECT status, COUNT(*) as count FROM thoughts GROUP BY status;
+                </div>
+                <div class="example-query" onclick="document.getElementById('query').value='SELECT author, AVG(thumbs_up) as avg_thumbs_up FROM thoughts GROUP BY author ORDER BY avg_thumbs_up DESC LIMIT 10;'">
+                    SELECT author, AVG(thumbs_up) as avg_thumbs_up FROM thoughts GROUP BY author ORDER BY avg_thumbs_up DESC LIMIT 10;
+                </div>
+                <div class="example-query" onclick="document.getElementById('query').value='SELECT t.content, t.status, te.similarity_score FROM thoughts t LEFT JOIN thought_evaluations te ON t.id = te.thought_id ORDER BY te.similarity_score DESC LIMIT 10;'">
+                    SELECT t.content, t.status, te.similarity_score FROM thoughts t LEFT JOIN thought_evaluations te ON t.id = te.thought_id ORDER BY te.similarity_score DESC LIMIT 10;
+                </div>
+                <div class="example-query" onclick="document.getElementById('query').value='SELECT COUNT(*) as total, SUM(thumbs_up) as total_up, SUM(thumbs_down) as total_down FROM thoughts WHERE status = \'APPROVED\';'">
+                    SELECT COUNT(*) as total, SUM(thumbs_up) as total_up, SUM(thumbs_down) as total_down FROM thoughts WHERE status = 'APPROVED';
+                </div>
+            </div>
+        </div>
+        
+        {% if results is not none %}
+        <div class="results-container">
+            <div class="results-header">
+                <h2>Query Results</h2>
+                {% if columns %}
+                <span class="row-count">{{ row_count }} row(s)</span>
+                {% endif %}
+            </div>
+            
+            {% if columns and results %}
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            {% for column in columns %}
+                            <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in results %}
+                        <tr>
+                            {% for column in columns %}
+                            <td>{{ row[column] }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% elif columns %}
+            <div class="no-results">
+                <p>Query executed successfully but returned no rows.</p>
+            </div>
+            {% else %}
+            <div class="no-results">
+                <p>Query executed successfully. {{ row_count }} row(s) affected.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

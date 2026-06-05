@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thoughts Database Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .nav-links {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .nav-links a:hover {
+            background: #764ba2;
+            transform: translateY(-1px);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-card.approved .stat-value { color: #10b981; }
+        .stat-card.rejected .stat-value { color: #ef4444; }
+        .stat-card.review .stat-value { color: #f59e0b; }
+        .stat-card.removed .stat-value { color: #6b7280; }
+        
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .table-header h2 {
+            color: #333;
+            font-size: 1.5em;
+            margin: 0;
+        }
+        
+        .filter-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filter-label {
+            color: #495057;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .filter-select {
+            padding: 10px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 180px;
+        }
+        
+        .filter-select:hover {
+            border-color: #667eea;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .filter-button {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+        }
+        
+        .filter-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+        }
+        
+        .filter-button:active {
+            transform: translateY(0);
+        }
+        
+        .clear-filter {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .clear-filter:hover {
+            background: #f8f9fa;
+        }
+        
+        .results-count {
+            color: #666;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: #f8f9fa;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+        
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-in_review {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-removed {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        
+        .content-cell {
+            max-width: 400px;
+            line-height: 1.4;
+        }
+        
+        .rating-positive {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .rating-negative {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        
+        .rating-neutral {
+            color: #6b7280;
+            font-weight: 600;
+        }
+        
+        .similarity-score {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+        
+        .author-info {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .author-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .timestamp {
+            font-size: 0.85em;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Thoughts Database Dashboard</h1>
+            <p class="subtitle">Real-time reporting and analytics</p>
+            <div class="nav-links">
+                <a href="/admin">Admin Panel</a>
+            </div>
+        </header>
+        
+        {% if error %}
+        <div class="error-message">
+            <strong>Database Connection Error:</strong> {{ error }}
+        </div>
+        {% endif %}
+        
+        {% if stats %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.total_thoughts or 0 }}</div>
+                <div class="stat-label">Total Thoughts</div>
+            </div>
+            <div class="stat-card approved">
+                <div class="stat-value">{{ stats.approved or 0 }}</div>
+                <div class="stat-label">Approved</div>
+            </div>
+            <div class="stat-card rejected">
+                <div class="stat-value">{{ stats.rejected or 0 }}</div>
+                <div class="stat-label">Rejected</div>
+            </div>
+            <div class="stat-card review">
+                <div class="stat-value">{{ stats.in_review or 0 }}</div>
+                <div class="stat-label">In Review</div>
+            </div>
+            <div class="stat-card removed">
+                <div class="stat-value">{{ stats.removed or 0 }}</div>
+                <div class="stat-label">Removed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.total_thumbs_up or 0 }}</div>
+                <div class="stat-label">Total Thumbs Up</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.total_thumbs_down or 0 }}</div>
+                <div class="stat-label">Total Thumbs Down</div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="table-container">
+            <div class="table-header">
+                <div>
+                    <h2>All Thoughts</h2>
+                    {% if thoughts %}
+                    <p class="results-count">Showing {{ thoughts|length }} thought(s)</p>
+                    {% endif %}
+                </div>
+                <form method="GET" action="/" class="filter-form">
+                    <label for="status" class="filter-label">Filter by Status:</label>
+                    <select name="status" id="status" class="filter-select">
+                        <option value="ALL" {% if selected_status == 'ALL' %}selected{% endif %}>All Statuses</option>
+                        <option value="APPROVED" {% if selected_status == 'APPROVED' %}selected{% endif %}>Approved</option>
+                        <option value="REJECTED" {% if selected_status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                        <option value="IN_REVIEW" {% if selected_status == 'IN_REVIEW' %}selected{% endif %}>In Review</option>
+                        <option value="REMOVED" {% if selected_status == 'REMOVED' %}selected{% endif %}>Removed</option>
+                    </select>
+                    <button type="submit" class="filter-button">Filter</button>
+                    {% if selected_status != 'ALL' %}
+                    <a href="/" class="clear-filter">Clear</a>
+                    {% endif %}
+                </form>
+            </div>
+            
+            {% if thoughts %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Content</th>
+                        <th>Author</th>
+                        <th>Status</th>
+                        <th>Thumbs Up</th>
+                        <th>Thumbs Down</th>
+                        <th>Net Rating</th>
+                        <th>Similarity</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for thought in thoughts %}
+                    <tr>
+                        <td class="content-cell">{{ thought.content }}</td>
+                        <td class="author-info">
+                            <div class="author-name">{{ thought.author }}</div>
+                            <div>{{ thought.author_bio }}</div>
+                        </td>
+                        <td>
+                            <span class="status-badge status-{{ thought.status.lower() }}">
+                                {{ thought.status }}
+                            </span>
+                        </td>
+                        <td class="rating-positive">{{ thought.thumbs_up }}</td>
+                        <td class="rating-negative">{{ thought.thumbs_down }}</td>
+                        <td class="{% if thought.net_rating > 0 %}rating-positive{% elif thought.net_rating < 0 %}rating-negative{% else %}rating-neutral{% endif %}">
+                            {{ thought.net_rating }}
+                        </td>
+                        <td class="similarity-score">
+                            {% if thought.similarity_score is not none %}
+                                {{ "%.4f"|format(thought.similarity_score) }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="timestamp">
+                            {{ thought.created_at.strftime('%Y-%m-%d %H:%M') if thought.created_at else '-' }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="no-data">
+                <p>No thoughts found in the database.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
