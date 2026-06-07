@@ -4,17 +4,10 @@ metadata:
   name: thoughts-dashboard
   description: A Flask web dashboard for viewing thoughts database reporting with admin SQL query interface
   annotations:
-    # GitHub repository
     github.com/project-slug: arunhari82/intern-use-case-demo-full
-
-    # Kubernetes deployment
     backstage.io/kubernetes-id: thoughts-dashboard
     backstage.io/kubernetes-namespace: thoughts-app
-
-    # Container image
     quay.io/repository-slug: quayadmin/thoughts-dashboard
-
-    # Documentation
     backstage.io/techdocs-ref: dir:.
   tags:
     - flask
@@ -36,35 +29,4 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: user1
-  system: thoughts-app
- 
----
-apiVersion: backstage.io/v1alpha1
-kind: Resource
-metadata:
-  name: thoughts-postgresql
-  description: PostgreSQL database for thoughts application
-  annotations:
-    backstage.io/kubernetes-id: postgresql
-    backstage.io/kubernetes-namespace: thoughts-app
-  tags:
-    - postgresql
-    - database
-spec:
-  type: database
-  lifecycle: production
-  owner: user1
-  system: thoughts-app
----
-apiVersion: backstage.io/v1alpha1
-kind: System
-metadata:
-  name: thoughts-app
-  description: Thoughts application system including dashboard and database
-  tags:
-    - flask
-    - postgresql
-    - dashboard
-spec:
   owner: user1
