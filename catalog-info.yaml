@@ -12,7 +12,7 @@ metadata:
     backstage.io/kubernetes-namespace: thoughts-app
 
     # Container image
-    quay.io/repository-slug: redhat_na_ssa/thoughts-dashboard
+    quay.io/repository-slug: quayadmin/thoughts-dashboard
 
     # Documentation
     backstage.io/techdocs-ref: dir:.
