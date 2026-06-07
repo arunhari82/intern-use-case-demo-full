@@ -60,7 +60,7 @@ metadata:
 spec:
   type: database
   lifecycle: production
-  owner: team-platform
+  owner: user1
   system: thoughts-app
 ---
 apiVersion: backstage.io/v1alpha1
@@ -73,5 +73,4 @@ metadata:
     - postgresql
     - dashboard
 spec:
-  owner: team-platform
-  domain: platform
+  owner: user1
