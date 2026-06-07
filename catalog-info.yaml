@@ -36,12 +36,8 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: team-platform
+  owner: user1
   system: thoughts-app
-  providesApis: []
-  consumesApis: []
-  dependsOn:
-    - resource:default/thoughts-postgresql
  
 ---
 apiVersion: backstage.io/v1alpha1
