@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: dashboard
-        image: thoughts-dashboard:latest
+        image: quay.io/redhat_na_ssa/thoughts-dashboard:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
