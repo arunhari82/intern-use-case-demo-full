@@ -42,9 +42,7 @@ spec:
   consumesApis: []
   dependsOn:
     - resource:default/thoughts-postgresql
-relations:
-  - type: ownedBy
-    targetRef: group:default/user1   
+ 
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Resource
