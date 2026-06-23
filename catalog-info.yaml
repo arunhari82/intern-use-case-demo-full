@@ -6,7 +6,7 @@ metadata:
   annotations:
     github.com/project-slug: arunhari82/intern-use-case-demo-full
     backstage.io/kubernetes-id: thoughts-dashboard
-    backstage.io/kubernetes-namespace: thoughts-app
+    janus-idp.io/tekton: thoughts-dashboard
     quay.io/repository-slug: quayadmin/thoughts-dashboard
     backstage.io/techdocs-ref: dir:.
   tags:
